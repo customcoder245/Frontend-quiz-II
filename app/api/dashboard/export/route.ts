@@ -9,7 +9,10 @@ const toCsv = (rows: SubmissionRecord[]) => {
   const header = [
     "id",
     "firstName",
+    "lastName",
+    "fullName",
     "email",
+    "message",
     "gender",
     "answersCount",
     "createdAt",
@@ -19,7 +22,10 @@ const toCsv = (rows: SubmissionRecord[]) => {
     [
       row.id,
       row.firstName,
+      row.lastName ?? "",
+      row.fullName ?? row.firstName,
       row.email,
+      row.message ?? "",
       row.gender,
       String(row.responses.length),
       row.createdAt,

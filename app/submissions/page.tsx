@@ -7,7 +7,7 @@ type PageProps = {
 
 const allowedFilters = new Set(["all", "recent", "completed"]);
 
-export default async function DashboardPage({ searchParams }: PageProps) {
+export default async function SubmissionsPage({ searchParams }: PageProps) {
   const adminSession = await requireAdminSession();
   const params = (await searchParams) ?? {};
   const normalizedFilter = (params.filter ?? "all").toLowerCase();
@@ -18,7 +18,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       initialQ={params.q?.trim() ?? ""}
       initialFilter={allowedFilters.has(normalizedFilter) ? normalizedFilter : "all"}
       initialView={params.view ?? ""}
-      activeSection="dashboard"
+      activeSection="submissions"
     />
   );
 }

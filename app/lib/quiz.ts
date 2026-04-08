@@ -33,6 +33,8 @@ const parseJsonArray = (rawValue: string) => {
   }
 };
 
+const getBackendApiBaseUrl = () => process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "") ?? "";
+
 const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen1-age",
@@ -271,7 +273,10 @@ export const buildQuizResponses = (
 export const submitQuizAssessment = async (payload: {
   userId?: string;
   email: string;
-  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  message?: string;
   gender?: string;
   responses: QuizResponsePayload[];
 }) => {
@@ -320,7 +325,13 @@ export const submitQuizAssessment = async (payload: {
   };
 
   try {
-    return await submitToApi(LOCAL_API_BASE_URL);
+    const backendApiBaseUrl = getBackendApiBaseUrl();
+
+    if (!backendApiBaseUrl) {
+      throw new Error("Backend API base URL is not configured.");
+    }
+
+    return await submitToApi(backendApiBaseUrl);
   } catch (error) {
     if (error instanceof TypeError) {
       throw new Error("Assessment API tak pohanch nahi ho saki.");

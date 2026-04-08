@@ -3,6 +3,7 @@
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import useHydrated from "@/app/components/useHydrated";
+import { resolveWeightGoal } from "@/app/lib/weight-goal";
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -17,22 +18,44 @@ const Screen16 = () => {
     ? Number(localStorage.getItem("screen13-target-weight")) || 0
     : 0;
 
-  const startWeight = currentWeightValue || 100;
-  const desiredWeight = clamp(
-    targetWeightValue || Math.max(60, startWeight - 20),
-    30,
-    300,
+  const { startWeight, desiredWeight, direction, absoluteChange } =
+    resolveWeightGoal(currentWeightValue, targetWeightValue);
+  const normalizedChange = clamp(
+    absoluteChange / Math.max(startWeight, desiredWeight, 1),
+    0.08,
+    0.45,
   );
-
-  const weightDrop = Math.max(8, startWeight - desiredWeight);
-  const normalizedDrop = clamp(weightDrop / Math.max(startWeight, 1), 0.08, 0.45);
-  const greenStartY = 36;
-  const greenEndY = Math.round(greenStartY + normalizedDrop * 260);
+  const greenStartY = direction === "gain" ? 118 : 42;
+  const greenEndY =
+    direction === "gain"
+      ? Math.round(greenStartY - normalizedChange * 150)
+      : direction === "maintain"
+        ? greenStartY + 3
+        : Math.round(greenStartY + normalizedChange * 150);
   const greenMidY = Math.round((greenStartY + greenEndY) / 2);
   const greenPath = `M0 ${greenStartY} C55 ${greenStartY}, 78 ${greenStartY + 12}, 112 ${greenMidY - 18} C143 ${greenMidY + 8}, 171 ${greenMidY + 29}, 214 ${greenEndY - 12} C251 ${greenEndY}, 283 ${greenEndY + 2}, 320 ${greenEndY}`;
   const greenAreaPath = `${greenPath} L320 190 L0 190 Z`;
-  const markerY = clamp(greenEndY - 5, 90, 155);
-  const targetLabelTop = clamp(markerY - 38, 88, 126);
+  const markerY = clamp(greenEndY, 24, 156);
+  const startLabelTop = clamp(greenStartY - 18, 10, 126);
+  const targetLabelTop = clamp(markerY - 18, 14, 138);
+  const title =
+    direction === "gain"
+      ? "Deine Gewichtszunahme"
+      : direction === "maintain"
+        ? "Dein Gewichtsziel"
+        : "Deine Gewichtsabnahme";
+  const changeLabel =
+    direction === "gain"
+      ? `+${absoluteChange} kg`
+      : direction === "loss"
+        ? `-${absoluteChange} kg`
+        : "0 kg";
+  const goalSummary =
+    direction === "gain"
+      ? `Dein Ziel liegt ${absoluteChange} kg ueber deinem aktuellen Gewicht.`
+      : direction === "loss"
+        ? `Dein Ziel liegt ${absoluteChange} kg unter deinem aktuellen Gewicht.`
+        : "Dein aktuelles Gewicht und dein Zielgewicht sind identisch.";
 
   return (
     <section className="mx-auto max-w-3xl bg-white px-4 pb-28 pt-4">
@@ -59,11 +82,17 @@ const Screen16 = () => {
 
         <div className="mx-auto mt-10 max-w-[370px] rounded-[6px] bg-white px-6 pb-6 pt-5 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
           <h3 className="text-[21px] font-semibold text-[#393939]">
-            Deine Gewichtsabnahme
+            {title}
           </h3>
+          <p className="mt-2 text-[14px] leading-[1.45] text-[#636363]">
+            {goalSummary}
+          </p>
 
           <div className="relative mt-4 h-[242px] overflow-hidden rounded-[2px] bg-[#fffefe]">
-            <div className="absolute left-0 top-[18px] z-20 rounded-[8px] bg-black px-3 py-1.5 text-[18px] font-semibold text-white">
+            <div
+              className="absolute left-0 z-20 rounded-[8px] bg-black px-3 py-1.5 text-[18px] font-semibold text-white"
+              style={{ top: `${startLabelTop}px` }}
+            >
               {startWeight} kg
             </div>
 
@@ -108,6 +137,10 @@ const Screen16 = () => {
               <span>{desiredWeight} kg</span>
             </div>
 
+            <div className="absolute right-[14px] top-[18px] rounded-full bg-[#f6f7f8] px-3 py-1 text-[12px] font-semibold text-[#222]">
+              {changeLabel}
+            </div>
+
             <div className="absolute bottom-[52px] left-0 right-0 flex justify-between text-[13px] text-[#8c8c8c]">
               <span>Heute</span>
               <span>Tag 60+</span>
@@ -143,8 +176,6 @@ const Screen16 = () => {
 };
 
 export default Screen16;
-
-
 
 
 

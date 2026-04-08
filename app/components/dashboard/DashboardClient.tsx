@@ -1,5 +1,6 @@
 "use client";
 
+import { isAxiosError } from "axios";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ReactNode, SVGProps } from "react";
@@ -7,13 +8,24 @@ import { logoutAdminAction } from "@/app/lib/auth-actions";
 import { apiClient } from "@/app/lib/api-client";
 
 type StoredResponse = { questionId: string; answer: string | number | string[] };
-type SubmissionRecord = { id: string; email: string; firstName: string; gender: string; responses: StoredResponse[]; createdAt: string };
+type SubmissionRecord = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName?: string;
+  fullName?: string;
+  message?: string;
+  gender: string;
+  responses: StoredResponse[];
+  createdAt: string;
+};
 type AdminSession = { username: string; role: "admin"; loginAt: string };
 type DashboardClientProps = {
   adminSession: AdminSession;
   initialQ: string;
   initialFilter: string;
   initialView: string;
+  activeSection?: "dashboard" | "submissions";
 };
 
 const iconProps = { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -26,6 +38,9 @@ const Users = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M16 21v-2a4 
 const Chart = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M4 20V10" /><path d="M10 20V4" /><path d="M16 20v-7" /><path d="M22 20v-4" /></Icon>;
 const Eye = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" /><circle cx="12" cy="12" r="3" /></Icon>;
 const Mail = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></Icon>;
+const Trash = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /></Icon>;
+
+const allowedFilters = new Set(["all", "recent", "completed"]);
 
 const formatDateTime = (value: string) =>
   new Intl.DateTimeFormat("en-IN", {
@@ -34,12 +49,36 @@ const formatDateTime = (value: string) =>
     timeZone: "Asia/Calcutta",
   }).format(new Date(value));
 
-const buildHref = ({ q, filter, view }: { q?: string; filter?: string; view?: string }) => {
+const buildHref = ({
+  q,
+  filter,
+  view,
+  basePath,
+}: {
+  q?: string;
+  filter?: string;
+  view?: string;
+  basePath: string;
+}) => {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
-  if (filter && filter !== "all") params.set("filter", filter);
+  if (filter && filter !== "all" && allowedFilters.has(filter)) params.set("filter", filter);
   if (view) params.set("view", view);
-  return params.size ? `/dashboard?${params.toString()}` : "/dashboard";
+  return params.size ? `${basePath}?${params.toString()}` : basePath;
+};
+
+const getDisplayName = (submission: Pick<SubmissionRecord, "firstName" | "lastName" | "fullName">) =>
+  submission.fullName?.trim() ||
+  [submission.firstName, submission.lastName].filter(Boolean).join(" ").trim() ||
+  submission.firstName;
+
+const getInitials = (value: string) => {
+  const parts = value.split(/\s+/).filter(Boolean).slice(0, 2);
+  if (parts.length === 0) {
+    return "US";
+  }
+
+  return parts.map((part) => part[0]?.toUpperCase() ?? "").join("");
 };
 
 export default function DashboardClient({
@@ -47,11 +86,19 @@ export default function DashboardClient({
   initialQ,
   initialFilter,
   initialView,
+  activeSection = "dashboard",
 }: DashboardClientProps) {
   const [submissions, setSubmissions] = useState<SubmissionRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [dataSource, setDataSource] = useState<"backend" | "local" | "">("");
+  const [deletingId, setDeletingId] = useState("");
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  const pagePath = activeSection === "submissions" ? "/submissions" : "/dashboard";
 
   useEffect(() => {
     let ignore = false;
@@ -95,7 +142,7 @@ export default function DashboardClient({
   }, []);
 
   const q = initialQ;
-  const filter = initialFilter;
+  const filter = allowedFilters.has(initialFilter) ? initialFilter : "all";
   const view = initialView;
 
   const derivedData = useMemo(() => {
@@ -109,9 +156,10 @@ export default function DashboardClient({
 
     const filtered = submissions.filter((submission) => {
       const complete = submission.responses.length >= 10;
+      const displayName = getDisplayName(submission);
       const searchOk =
         !q ||
-        submission.firstName.toLowerCase().includes(q.toLowerCase()) ||
+        displayName.toLowerCase().includes(q.toLowerCase()) ||
         submission.email.toLowerCase().includes(q.toLowerCase()) ||
         submission.id.toLowerCase().includes(q.toLowerCase());
       const filterOk =
@@ -133,7 +181,7 @@ export default function DashboardClient({
           if (!existing) {
             map.set(submission.email, {
               email: submission.email,
-              firstName: submission.firstName,
+              name: getDisplayName(submission),
               gender: submission.gender,
               totalSubmissions: 1,
               latestCreatedAt: submission.createdAt,
@@ -150,14 +198,14 @@ export default function DashboardClient({
           ) {
             existing.latestCreatedAt = submission.createdAt;
             existing.latestSubmissionId = submission.id;
-            existing.firstName = submission.firstName;
+            existing.name = getDisplayName(submission);
             existing.gender = submission.gender;
           }
 
           return map;
         }, new Map<string, {
           email: string;
-          firstName: string;
+          name: string;
           gender: string;
           totalSubmissions: number;
           latestCreatedAt: string;
@@ -188,21 +236,65 @@ export default function DashboardClient({
   }, [filter, q, submissions, view]);
 
   const navItems = [
-    { label: "Dashboard", icon: Grid, href: "/dashboard", active: true },
-    { label: "Submissions", icon: File, href: "/dashboard#repository" },
+    { label: "Dashboard", icon: Grid, href: "/dashboard", active: activeSection === "dashboard" },
+    { label: "Submissions", icon: File, href: "/submissions", active: activeSection === "submissions" },
     { label: "Users", icon: Users, href: "/admin" },
     { label: "Reports", icon: Chart, href: "/reports" },
   ];
+  const showBranding = activeSection === "dashboard";
+
+  const handleDelete = async (submission: SubmissionRecord) => {
+    const displayName = getDisplayName(submission);
+    const confirmed = window.confirm(`Delete submission for ${displayName}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(submission.id);
+    setFeedback(null);
+
+    try {
+      await apiClient.delete(`/dashboard/submissions/${submission.id}`);
+      setSubmissions((current) => current.filter((item) => item.id !== submission.id));
+      setFeedback({
+        type: "success",
+        message: `${displayName} Has the submission been deleted?`,
+      });
+    } catch (deleteError) {
+      const responseData = isAxiosError(deleteError) ? deleteError.response?.data : null;
+      const message =
+        responseData &&
+        typeof responseData === "object" &&
+        "message" in responseData &&
+        typeof responseData.message === "string"
+          ? responseData.message
+          : isAxiosError(deleteError)
+            ? deleteError.message
+            : deleteError instanceof Error
+              ? deleteError.message
+              : ": The submission could not be deleted.;";
+
+      setFeedback({
+        type: "error",
+        message,
+      });
+    } finally {
+      setDeletingId("");
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#eef4ff_0%,#f8fbff_28%,#f3f6fb_55%,#eef2f8_100%)] p-4 sm:p-6">
       <div className="mx-auto grid max-w-[1480px] gap-5 xl:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="rounded-[30px] border border-white/70 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-5 shadow-[0_18px_55px_rgba(36,66,115,0.08)]">
-          <div className="rounded-[20px] border border-[#e8edf5] bg-white px-4 py-4">
-            <p className="text-[22px] font-semibold text-[#173055]">AssessQuest</p>
-            <p className="text-[13px] text-[#6d7c92]">Assessment manager</p>
-          </div>
-          <nav className="mt-6 space-y-2">
+          {showBranding ? (
+            <div className="rounded-[20px] border border-[#e8edf5] bg-white px-4 py-4">
+              <p className="text-[22px] font-semibold text-[#173055]">AssessQuest</p>
+              <p className="text-[13px] text-[#6d7c92]">Assessment manager</p>
+            </div>
+          ) : null}
+          <nav className={`${showBranding ? "mt-6" : "mt-0"} space-y-2`}>
             {navItems.map((item) => (
               <Link key={item.label} href={item.href} className={`flex items-center gap-3 rounded-[16px] px-4 py-3 transition ${item.active ? "bg-[linear-gradient(135deg,#18345e_0%,#234f8f_100%)] text-white" : "text-[#26354d] hover:bg-[#f4f7fb]"}`}>
                 <item.icon width={18} height={18} />
@@ -217,9 +309,13 @@ export default function DashboardClient({
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f7e95]">Admin Panel</p>
-                <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.03em] text-[#16253a]">Assessment Dashboard</h1>
+                <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.03em] text-[#16253a]">
+                  {activeSection === "submissions" ? "Assessment Submissions" : "Assessment Dashboard"}
+                </h1>
                 <p className="mt-2 text-[14px] leading-[1.6] text-[#6f7e95]">
-               Real user records are being loaded on the dashboard through the API.
+                  {activeSection === "submissions"
+                    ? "All submissions are available here with quick filters, detail view, and delete actions."
+                    : "Real user records are being loaded on the dashboard through the API."}
                 </p>
                 <div className="mt-4 inline-flex flex-wrap items-center gap-3 rounded-[18px] border border-[#e3ebf5] bg-[#f8fbff] px-4 py-3 text-[13px] text-[#516277]">
                   <span className="font-semibold text-[#173055]">{adminSession.username}</span>
@@ -235,7 +331,7 @@ export default function DashboardClient({
                 </div>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <form action="/dashboard" className="flex min-w-[280px] items-center gap-3 rounded-[16px] border border-[#dfe6ef] bg-white px-4 py-3">
+                <form action={pagePath} className="flex min-w-[280px] items-center gap-3 rounded-[16px] border border-[#dfe6ef] bg-white px-4 py-3">
                   <Search width={18} height={18} className="text-[#72839a]" />
                   <input name="q" defaultValue={q} placeholder="Search candidate or email..." className="w-full bg-transparent text-[14px] text-[#16253a] outline-none placeholder:text-[#95a2b3]" />
                   {filter !== "all" ? <input type="hidden" name="filter" value={filter} /> : null}
@@ -245,7 +341,7 @@ export default function DashboardClient({
                     Logout
                   </button>
                 </form>
-                <Link href="/dashboard#recent-activity" className="relative flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#dfe6ef] bg-white text-[#1d3559]">
+                <Link href={`${pagePath}#recent-activity`} className="relative flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#dfe6ef] bg-white text-[#1d3559]">
                   <Bell width={18} height={18} />
                   <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ef5b6c] px-1 text-[10px] font-semibold text-white">{derivedData.recent.length}</span>
                 </Link>
@@ -271,10 +367,15 @@ export default function DashboardClient({
                     <p className="mt-1 text-[14px] text-[#738399]">Submitted users’ data from the backend—including emails, answers, and the activity timeline—is displayed here.</p>
                   </div>
                   <div className="mt-5 flex flex-wrap gap-3">
-                    {["all", "recent", "completed", "draft"].map((item) => (
-                      <Link key={item} href={`${buildHref({ q, filter: item })}#repository`} className={`rounded-[14px] border px-4 py-2.5 text-[13px] font-semibold ${filter === item ? "border-[#d8e4f7] bg-[#eef4ff] text-[#265cae]" : "border-[#dde5ef] bg-white text-[#526177]"}`}>{item[0].toUpperCase() + item.slice(1)}</Link>
+                    {["all", "recent", "completed"].map((item) => (
+                      <Link key={item} href={`${buildHref({ q, filter: item, basePath: pagePath })}#repository`} className={`rounded-[14px] border px-4 py-2.5 text-[13px] font-semibold ${filter === item ? "border-[#d8e4f7] bg-[#eef4ff] text-[#265cae]" : "border-[#dde5ef] bg-white text-[#526177]"}`}>{item[0].toUpperCase() + item.slice(1)}</Link>
                     ))}
                   </div>
+                  {feedback ? (
+                    <div className={`mt-4 rounded-[16px] border px-4 py-3 text-[13px] font-medium ${feedback.type === "success" ? "border-[#dbeedc] bg-[#f4fbf5] text-[#2f8a53]" : "border-[#f3d6dc] bg-[#fff5f7] text-[#b33b4b]"}`}>
+                      {feedback.message}
+                    </div>
+                  ) : null}
                 </div>
 
                 {isLoading ? (
@@ -312,14 +413,14 @@ export default function DashboardClient({
                           return (
                             <tr key={submission.id} className="text-[14px] text-[#1f2e45]">
                               <td className="px-6 py-4 font-medium">#{String(index + 1011)}</td>
-                              <td className="px-6 py-4"><p className="font-semibold text-[#14253d]">{submission.firstName}</p><p className="mt-0.5 text-[12px] text-[#8190a6]">{submission.gender}</p></td>
+                              <td className="px-6 py-4"><p className="font-semibold text-[#14253d]">{getDisplayName(submission)}</p><p className="mt-0.5 text-[12px] text-[#8190a6]">{submission.gender}</p></td>
                               <td className="px-6 py-4 text-[#516077]">{submission.email}</td>
                               <td className="px-6 py-4">{submission.responses.length}</td>
                               <td className="px-6 py-4"><span className={`inline-flex rounded-full px-2.5 py-1 text-[12px] font-semibold ${complete ? "bg-[#e9f8ef] text-[#2f8a53]" : "bg-[#fff4df] text-[#b17918]"}`}>{complete ? "Published" : "Draft"}</span></td>
                               <td className="px-6 py-4 text-[#516077]">{formatDateTime(submission.createdAt)}</td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3 text-[#6c7b90]">
-                                  <Link href={`${buildHref({ q, filter, view: submission.id })}#submission-details`} className="hover:text-[#1b5db7]" title="View details"><Eye width={16} height={16} /></Link>
+                                  <Link href={`${buildHref({ q, filter, view: submission.id, basePath: pagePath })}#submission-details`} className="hover:text-[#1b5db7]" title="View details"><Eye width={16} height={16} /></Link>
                                   <a href={`mailto:${submission.email}?subject=Assessment Update`} className="hover:text-[#1b5db7]" title="Send email"><Mail width={16} height={16} /></a>
                                   <a
                                     href={`/api/dashboard/export?id=${submission.id}&format=json`}
@@ -328,6 +429,15 @@ export default function DashboardClient({
                                   >
                                     <File width={16} height={16} />
                                   </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => void handleDelete(submission)}
+                                    disabled={deletingId === submission.id}
+                                    className="transition hover:text-[#c53e53] disabled:cursor-not-allowed disabled:opacity-40"
+                                    title="Delete submission"
+                                  >
+                                    <Trash width={16} height={16} />
+                                  </button>
                                 </div>
                               </td>
                             </tr>
@@ -347,10 +457,20 @@ export default function DashboardClient({
                 {derivedData.selected ? (
                   <div className="mt-4 space-y-4">
                     <div className="rounded-[18px] bg-[#f6f9ff] p-4">
-                      <p className="text-[18px] font-semibold text-[#17263e]">{derivedData.selected.firstName}</p>
+                      <p className="text-[18px] font-semibold text-[#17263e]">{getDisplayName(derivedData.selected)}</p>
                       <p className="mt-1 text-[14px] text-[#5f7189]">{derivedData.selected.email}</p>
                       <p className="mt-2 text-[12px] uppercase tracking-[0.12em] text-[#8a97aa]">{formatDateTime(derivedData.selected.createdAt)}</p>
                     </div>
+                    {derivedData.selected.message ? (
+                      <div className="rounded-[18px] border border-[#dbe7f5] bg-[#f8fbff] p-4">
+                        <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#6c7c92]">
+                          Your Message
+                        </p>
+                        <p className="mt-2 text-[14px] leading-[1.6] text-[#24344e]">
+                          {derivedData.selected.message}
+                        </p>
+                      </div>
+                    ) : null}
                     <div className="space-y-3">
                       {derivedData.selected.responses.map((response) => (
                         <div key={response.questionId} className="rounded-[16px] border border-[#e6edf5] bg-[#fbfcfe] p-3">
@@ -373,10 +493,10 @@ export default function DashboardClient({
                 <h3 className="text-[22px] font-semibold text-[#16253a]">Users Data</h3>
                 <div className="mt-4 space-y-4">
                   {derivedData.users.length === 0 ? <p className="text-[14px] text-[#72839a]">No user has submitted yet.</p> : derivedData.users.map((user, index) => (
-                    <Link key={user.email} href={`${buildHref({ q, filter, view: user.latestSubmissionId })}#submission-details`} className="flex gap-3 rounded-[16px] p-2 transition hover:bg-[#f6f9ff]">
-                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${index % 2 === 0 ? "bg-[linear-gradient(135deg,#1d4278_0%,#5a99eb_100%)]" : "bg-[linear-gradient(135deg,#7d57c6_0%,#f08aac_100%)]"}`}>{user.firstName.slice(0, 2).toUpperCase()}</div>
+                    <Link key={user.email} href={`${buildHref({ q, filter, view: user.latestSubmissionId, basePath: pagePath })}#submission-details`} className="flex gap-3 rounded-[16px] p-2 transition hover:bg-[#f6f9ff]">
+                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${index % 2 === 0 ? "bg-[linear-gradient(135deg,#1d4278_0%,#5a99eb_100%)]" : "bg-[linear-gradient(135deg,#7d57c6_0%,#f08aac_100%)]"}`}>{getInitials(user.name)}</div>
                       <div>
-                        <p className="text-[14px] leading-[1.5] text-[#24344e]"><span className="font-semibold">{user.firstName}</span></p>
+                        <p className="text-[14px] leading-[1.5] text-[#24344e]"><span className="font-semibold">{user.name}</span></p>
                         <p className="text-[12px] break-all text-[#7990ad]">{user.email}</p>
                         <p className="mt-1 text-[12px] text-[#95a2b3]">
                           {user.totalSubmissions} submission(s) | {formatDateTime(user.latestCreatedAt)}

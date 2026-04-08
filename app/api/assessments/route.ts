@@ -21,7 +21,10 @@ export async function POST(request: Request) {
   const body = (await request.json()) as {
     userId?: string;
     email?: string;
+    firstName?: string;
+    lastName?: string;
     fullName?: string;
+    message?: string;
     gender?: string;
     responses?: Array<{
       questionId: string;
@@ -30,7 +33,13 @@ export async function POST(request: Request) {
   };
 
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-  const fullName = typeof body.fullName === "string" ? body.fullName.trim() : "";
+  const firstName = typeof body.firstName === "string" ? body.firstName.trim() : "";
+  const lastName = typeof body.lastName === "string" ? body.lastName.trim() : "";
+  const fullName =
+    typeof body.fullName === "string" && body.fullName.trim().length > 0
+      ? body.fullName.trim()
+      : [firstName, lastName].filter(Boolean).join(" ").trim();
+  const message = typeof body.message === "string" ? body.message.trim() : "";
   const gender = typeof body.gender === "string" ? body.gender.trim() : "female";
   const userId = typeof body.userId === "string" ? body.userId : undefined;
   const responses = Array.isArray(body.responses)
@@ -44,22 +53,33 @@ export async function POST(request: Request) {
       )
     : [];
 
-  if (fullName.length < 2) {
-    return NextResponse.json({ message: "Name ist erforderlich." }, { status: 400 });
+  if (firstName.length < 2) {
+    return NextResponse.json({ message: "First name is required." }, { status: 400 });
+  }
+
+  if (lastName.length < 2) {
+    return NextResponse.json({ message: "Last name is required." }, { status: 400 });
   }
 
   if (!/\S+@\S+\.\S+/.test(email)) {
-    return NextResponse.json({ message: "Gueltige E-Mail ist erforderlich." }, { status: 400 });
+    return NextResponse.json({ message: "Valid email is required." }, { status: 400 });
+  }
+
+  if (message.length < 3) {
+    return NextResponse.json({ message: "Your message is required." }, { status: 400 });
   }
 
   if (responses.length === 0) {
-    return NextResponse.json({ message: "Keine Antworten zum Speichern gefunden." }, { status: 400 });
+    return NextResponse.json({ message: "No assessment answers were found." }, { status: 400 });
   }
 
   const { assessment, updatedUser } = await saveAssessment({
     userId,
     email,
+    firstName,
+    lastName,
     fullName,
+    message,
     gender,
     responses,
   });
@@ -69,6 +89,8 @@ export async function POST(request: Request) {
     user: {
       email: assessment.email,
       firstName: assessment.firstName,
+      lastName: assessment.lastName,
+      fullName: assessment.fullName,
       gender: assessment.gender,
       role: "user",
     },

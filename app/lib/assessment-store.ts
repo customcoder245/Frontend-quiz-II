@@ -1,7 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { appendAssessmentToUser } from "@/app/lib/user-auth-store";
+import {
+  appendAssessmentToUser,
+  removeAssessmentFromUsers,
+} from "@/app/lib/user-auth-store";
 
 export type AssessmentResponse = {
   questionId: string;
@@ -13,7 +16,9 @@ export type AssessmentRecord = {
   userId?: string;
   email: string;
   firstName: string;
-  fullName: string;
+  lastName?: string;
+  fullName?: string;
+  message?: string;
   gender: string;
   responses: AssessmentResponse[];
   createdAt: string;
@@ -52,44 +57,70 @@ export const getAssessmentById = async (id: string) => {
   return assessments.find((assessment) => assessment.id === id) ?? null;
 };
 
+const writeAssessments = async (assessments: AssessmentRecord[]) => {
+  await mkdir(dataDirectory, { recursive: true });
+  const payload = JSON.stringify(assessments, null, 2);
+
+  await writeFile(assessmentsPath, payload, "utf8");
+  await writeFile(legacySubmissionsPath, payload, "utf8");
+};
+
+const normalizeAssessmentName = (input: {
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+}) => {
+  const explicitFirstName = input.firstName?.trim() ?? "";
+  const explicitLastName = input.lastName?.trim() ?? "";
+  const explicitFullName = input.fullName?.trim() ?? "";
+  const derivedFullName =
+    explicitFullName ||
+    [explicitFirstName, explicitLastName].filter(Boolean).join(" ").trim();
+  const fallbackParts = derivedFullName.split(/\s+/).filter(Boolean);
+  const firstName = explicitFirstName || fallbackParts[0] || "";
+  const lastName = explicitLastName || fallbackParts.slice(1).join(" ");
+  const fullName =
+    derivedFullName || [firstName, lastName].filter(Boolean).join(" ").trim();
+
+  return {
+    firstName,
+    lastName,
+    fullName,
+  };
+};
+
 export const saveAssessment = async (input: {
   userId?: string;
   email: string;
-  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  message?: string;
   gender: string;
   responses: AssessmentResponse[];
 }) => {
   const email = input.email.trim().toLowerCase();
-  const fullName = input.fullName.trim();
+  const message = input.message?.trim() ?? "";
+  const name = normalizeAssessmentName(input);
   const assessment: AssessmentRecord = {
     id: randomUUID(),
     userId: input.userId?.trim() || undefined,
     email,
-    firstName: fullName,
-    fullName,
+    firstName: name.firstName || name.fullName,
+    lastName: name.lastName || undefined,
+    fullName: name.fullName || name.firstName,
+    message,
     gender: input.gender.trim() || "female",
     responses: input.responses,
     createdAt: new Date().toISOString(),
   };
 
   const existingAssessments = await loadAssessments();
-
-  await mkdir(dataDirectory, { recursive: true });
-  await writeFile(
-    assessmentsPath,
-    JSON.stringify([...existingAssessments, assessment], null, 2),
-    "utf8",
-  );
-
-  await writeFile(
-    legacySubmissionsPath,
-    JSON.stringify([...existingAssessments, assessment], null, 2),
-    "utf8",
-  );
+  await writeAssessments([...existingAssessments, assessment]);
 
   const updatedUser = await appendAssessmentToUser({
     userId: assessment.userId,
-    fullName: input.fullName,
+    fullName: assessment.fullName || assessment.firstName,
     email: assessment.email,
     submissionId: assessment.id,
     gender: assessment.gender,
@@ -101,4 +132,19 @@ export const saveAssessment = async (input: {
     assessment,
     updatedUser,
   };
+};
+
+export const deleteAssessment = async (id: string) => {
+  const assessments = await loadAssessments();
+
+  if (!assessments.some((assessment) => assessment.id === id)) {
+    return false;
+  }
+
+  const nextAssessments = assessments.filter((assessment) => assessment.id !== id);
+
+  await writeAssessments(nextAssessments);
+  await removeAssessmentFromUsers(id);
+
+  return true;
 };

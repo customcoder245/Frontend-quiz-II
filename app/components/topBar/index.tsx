@@ -18,33 +18,10 @@ const TopBar = () => {
     pathname.startsWith("/user-login") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/submissions") ||
     pathname.startsWith("/reports");
 
   const isFirstScreen = pathname === "/" || pathname === "/screen1";
-  const isFinalScreen = pathname === "/screen24";
-
-  const handleQuizLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-    } catch {
-      // Best-effort logout. Local quiz state is cleared below either way.
-    } finally {
-      if (typeof window !== "undefined") {
-        const removableKeys = Object.keys(window.localStorage).filter(
-          (key) => key.startsWith("screen") || key.startsWith("quiz-"),
-        );
-
-        removableKeys.forEach((key) => {
-          window.localStorage.removeItem(key);
-        });
-      }
-
-      router.push("/");
-      router.refresh();
-    }
-  };
 
   let currentStep = 1;
   if (!isFirstScreen) {
@@ -94,18 +71,8 @@ const TopBar = () => {
             />
           </div>
 
-          {isFirstScreen || isFinalScreen ? (
+          {isFirstScreen ? (
             <div className="mt-2 flex justify-end text-[12px] font-semibold sm:absolute sm:right-5 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2 sm:text-[13px]">
-              {isFinalScreen ? (
-                <button
-                  type="button"
-                  onClick={handleQuizLogout}
-                  className="rounded-full border border-[#ead1d7] bg-[#fff7f8] px-3 py-2 text-[#9c3246] shadow-[0_8px_18px_rgba(156,50,70,0.08)] transition hover:bg-[#fff1f4]"
-                >
-                  Logout
-                </button>
-              ) : null}
-
               {isFirstScreen ? (
               <Link
                 href="/login"

@@ -1,136 +1,192 @@
-import { logoutAdminAction } from "@/app/lib/auth-actions";
+import Link from "next/link";
+import AdminShell, {
+  formatAdminDateTime,
+} from "@/app/components/dashboard/AdminShell";
 import { requireAdminSession } from "@/app/lib/auth";
 import { resolveSubmissions } from "@/app/lib/submissions";
 
-const formatDateTime = (value: string) =>
-  new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Calcutta",
-  }).format(new Date(value));
+const getDisplayName = (submission: {
+  firstName: string;
+  lastName?: string;
+  fullName?: string;
+}) =>
+  submission.fullName ||
+  [submission.firstName, submission.lastName].filter(Boolean).join(" ").trim() ||
+  submission.firstName;
 
 export default async function AdminPage() {
   const adminSession = await requireAdminSession();
   const { submissions } = await resolveSubmissions();
-  const uniqueUsers = new Set(submissions.map((item) => item.email)).size;
-  const latestSubmission = submissions[0]?.createdAt;
+
+  const users = Array.from(
+    submissions.reduce((map, submission) => {
+      const existing = map.get(submission.email);
+
+      if (!existing) {
+        map.set(submission.email, {
+          email: submission.email,
+          name: getDisplayName(submission),
+          gender: submission.gender,
+          totalSubmissions: 1,
+          latestCreatedAt: submission.createdAt,
+          latestMessage: submission.message || "",
+        });
+        return map;
+      }
+
+      existing.totalSubmissions += 1;
+
+      if (
+        new Date(submission.createdAt).getTime() >
+        new Date(existing.latestCreatedAt).getTime()
+      ) {
+        existing.name = getDisplayName(submission);
+        existing.gender = submission.gender;
+        existing.latestCreatedAt = submission.createdAt;
+        existing.latestMessage = submission.message || "";
+      }
+
+      return map;
+    }, new Map<string, {
+      email: string;
+      name: string;
+      gender: string;
+      totalSubmissions: number;
+      latestCreatedAt: string;
+      latestMessage: string;
+    }>()),
+  )
+    .map(([, user]) => user)
+    .sort(
+      (a, b) =>
+        new Date(b.latestCreatedAt).getTime() - new Date(a.latestCreatedAt).getTime(),
+    );
+
+  const averageSubmissions =
+    users.length > 0 ? (submissions.length / users.length).toFixed(1) : "0.0";
+  const latestActivity = users[0]?.latestCreatedAt;
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#fff2f4_0%,#fff_38%,#f8fafc_100%)] px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-6xl">
-        <div className="rounded-[28px] border border-[#efd6dc] bg-white/90 p-6 shadow-[0_20px_60px_rgba(156,50,70,0.10)] sm:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#9c3246]">
-                Admin Dashboard
-              </p>
-              <h1 className="mt-3 font-(family-name:--font-display) text-[34px] leading-[1.05] text-[#1f1720] sm:text-[42px]">
-                Assessment submissions
-              </h1>
-              <p className="mt-3 max-w-[640px] text-[15px] leading-[1.6] text-[#5f5560]">
-                Here you can see which user has submitted the assessment, their name, email, submission time, and how many answers were saved.
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-3 rounded-[18px] border border-[#f0e2e6] bg-[#fff8f9] px-4 py-3 text-[13px] text-[#6b5f66]">
-                <span className="font-semibold text-[#9c3246]">{adminSession.username}</span>
-                <span className="rounded-full bg-[#f6dbe1] px-2.5 py-1 font-semibold text-[#9c3246]">
-                  {adminSession.role}
-                </span>
-                <span>Logged in: {formatDateTime(adminSession.loginAt)}</span>
-                <form action={logoutAdminAction}>
-                  <button type="submit" className="rounded-full border border-[#ead1d7] bg-white px-4 py-2 font-semibold text-[#8d3041] transition hover:bg-[#fff1f4]">
-                    Logout
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-[22px] border border-[#f0e2e6] bg-[#fff8f9] px-5 py-4">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#7a6570]">
-                  Total assessments
-                </p>
-                <p className="mt-2 text-[30px] font-semibold text-[#9c3246]">{submissions.length}</p>
-              </div>
-              <div className="rounded-[22px] border border-[#e3edf4] bg-[#f7fbff] px-5 py-4">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#627180]">
-                  Unique users
-                </p>
-                <p className="mt-2 text-[30px] font-semibold text-[#1f4f8f]">{uniqueUsers}</p>
-              </div>
-              <div className="rounded-[22px] border border-[#e4efe8] bg-[#f7fcf8] px-5 py-4">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#5f7666]">
-                  Latest submit
-                </p>
-                <p className="mt-2 text-[14px] font-semibold leading-[1.4] text-[#256341]">
-                  {latestSubmission ? formatDateTime(latestSubmission) : "No submissions yet"}
-                </p>
-              </div>
-            </div>
+    <AdminShell
+      adminSession={adminSession}
+      activePage="users"
+      title="Users Overview"
+      description="All admin pages now follow the same dashboard UI. This page shows unique users, their latest activity, and how many submissions each user has made."
+      actions={
+        <>
+          <Link
+            href="/submissions"
+            className="inline-flex items-center justify-center rounded-[16px] border border-[#dfe6ef] bg-white px-4 py-3 text-[14px] font-semibold text-[#1d3559] transition hover:bg-[#f4f7fb]"
+          >
+            Open Submissions
+          </Link>
+          <Link
+            href="/reports"
+            className="inline-flex items-center justify-center rounded-[16px] bg-[linear-gradient(135deg,#18345e_0%,#2e71d0_100%)] px-5 py-3 text-[14px] font-semibold text-white"
+          >
+            Open Reports
+          </Link>
+        </>
+      }
+      stats={
+        <>
+          <div className="rounded-[22px] border border-[#e4ebf2] bg-white px-5 py-5 shadow-[0_8px_25px_rgba(42,78,130,0.06)]">
+            <p className="text-[13px] text-[#6c7b90]">Unique Users</p>
+            <p className="mt-2 text-[38px] font-semibold tracking-[-0.04em] text-[#17263e]">
+              {users.length}
+            </p>
           </div>
-
-          <div className="mt-8 overflow-hidden rounded-[24px] border border-[#efe6e9]">
-            {submissions.length === 0 ? (
-              <div className="bg-white px-6 py-16 text-center">
-                <h2 className="font-(family-name:--font-display) text-[30px] text-[#9c3246]">
-                 No assessment has been saved yet.
-                </h2>
-                <p className="mx-auto mt-3 max-w-[460px] text-[15px] leading-[1.6] text-[#6b5f66]">
-                  When users submit on `screen24`, their name and email will automatically appear here.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="hidden grid-cols-[1.4fr_1.3fr_0.8fr_1.1fr] gap-4 border-b border-[#efe6e9] bg-[#fff7f8] px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#715862] md:grid">
-                  <div>Name</div>
-                  <div>Email</div>
-                  <div>Answers</div>
-                  <div>Submitted at</div>
-                </div>
-
-                <div className="divide-y divide-[#f2eaed] bg-white">
-                  {submissions.map((submission) => (
-                    <div
-                      key={submission.id}
-                      className="grid gap-3 px-6 py-5 md:grid-cols-[1.4fr_1.3fr_0.8fr_1.1fr] md:items-center"
-                    >
-                      <div>
-                        <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#8a6b75] md:hidden">
-                          Name
-                        </p>
-                        <p className="text-[16px] font-semibold text-[#21191f]">
-                          {submission.firstName}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#8a6b75] md:hidden">
-                          Email
-                        </p>
-                        <p className="break-all text-[15px] text-[#51474f]">{submission.email}</p>
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#8a6b75] md:hidden">
-                          Answers
-                        </p>
-                        <span className="inline-flex rounded-full bg-[#f6dbe1] px-3 py-1 text-[13px] font-semibold text-[#9c3246]">
-                          {submission.responses.length} saved
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#8a6b75] md:hidden">
-                          Submitted at
-                        </p>
-                        <p className="text-[14px] leading-[1.45] text-[#51474f]">
-                          {formatDateTime(submission.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
+          <div className="rounded-[22px] border border-[#e4ebf2] bg-white px-5 py-5 shadow-[0_8px_25px_rgba(42,78,130,0.06)]">
+            <p className="text-[13px] text-[#6c7b90]">Total Submissions</p>
+            <p className="mt-2 text-[38px] font-semibold tracking-[-0.04em] text-[#17263e]">
+              {submissions.length}
+            </p>
           </div>
+          <div className="rounded-[22px] border border-[#e4ebf2] bg-white px-5 py-5 shadow-[0_8px_25px_rgba(42,78,130,0.06)]">
+            <p className="text-[13px] text-[#6c7b90]">Average / User</p>
+            <p className="mt-2 text-[38px] font-semibold tracking-[-0.04em] text-[#17263e]">
+              {averageSubmissions}
+            </p>
+          </div>
+          <div className="rounded-[22px] border border-[#e4ebf2] bg-white px-5 py-5 shadow-[0_8px_25px_rgba(42,78,130,0.06)]">
+            <p className="text-[13px] text-[#6c7b90]">Latest Activity</p>
+            <p className="mt-2 text-[14px] font-semibold leading-[1.5] text-[#17263e]">
+              {latestActivity ? formatAdminDateTime(latestActivity) : "No users yet"}
+            </p>
+          </div>
+        </>
+      }
+    >
+      <div className="rounded-[26px] border border-[#e4ebf2] bg-white shadow-[0_8px_25px_rgba(42,78,130,0.06)]">
+        <div className="border-b border-[#ebf0f5] px-5 py-5 sm:px-6">
+          <h2 className="text-[24px] font-semibold tracking-[-0.03em] text-[#16253a]">
+            Users Directory
+          </h2>
+          <p className="mt-1 text-[14px] text-[#738399]">
+            Each user is grouped by email so you can quickly review their latest
+            submission, total activity, and saved profile details.
+          </p>
         </div>
+
+        {users.length === 0 ? (
+          <div className="px-6 py-16 text-center">
+            <h3 className="text-[26px] font-semibold text-[#17263e]">No users found</h3>
+            <p className="mx-auto mt-3 max-w-[520px] text-[15px] leading-[1.6] text-[#718095]">
+              When assessments are submitted, unique users will appear here with
+              their latest activity and submission count.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left">
+              <thead className="border-b border-[#edf2f7] bg-[#fbfcfe]">
+                <tr className="text-[12px] uppercase tracking-[0.12em] text-[#6e7e95]">
+                  <th className="px-6 py-4 font-semibold">User</th>
+                  <th className="px-6 py-4 font-semibold">Email</th>
+                  <th className="px-6 py-4 font-semibold">Gender</th>
+                  <th className="px-6 py-4 font-semibold">Submissions</th>
+                  <th className="px-6 py-4 font-semibold">Latest Activity</th>
+                  <th className="px-6 py-4 font-semibold">Quick Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#edf2f7]">
+                {users.map((user) => (
+                  <tr key={user.email} className="text-[14px] text-[#1f2e45]">
+                    <td className="px-6 py-4">
+                      <p className="font-semibold text-[#14253d]">{user.name}</p>
+                      {user.latestMessage ? (
+                        <p className="mt-1 max-w-[280px] truncate text-[12px] text-[#8190a6]">
+                          {user.latestMessage}
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-[12px] text-[#8190a6]">No message saved</p>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-[#516077]">{user.email}</td>
+                    <td className="px-6 py-4 text-[#516077]">{user.gender}</td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex rounded-full bg-[#eef4ff] px-3 py-1 text-[12px] font-semibold text-[#275cad]">
+                        {user.totalSubmissions} total
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-[#516077]">
+                      {formatAdminDateTime(user.latestCreatedAt)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link
+                        href="/submissions"
+                        className="inline-flex rounded-[12px] border border-[#dfe6ef] px-3 py-2 text-[13px] font-semibold text-[#1d3559] transition hover:bg-[#f4f7fb]"
+                      >
+                        View Submissions
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-    </main>
+    </AdminShell>
   );
 }

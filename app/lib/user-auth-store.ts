@@ -218,3 +218,35 @@ export const appendAssessmentToUser = async (input: UserAssessmentInput) => {
 
   return updatedUser;
 };
+
+export const removeAssessmentFromUsers = async (submissionId: string) => {
+  const users = await readUsers();
+  let hasChanges = false;
+
+  const updatedUsers = users.map((user) => {
+    if (!user.assessments?.length) {
+      return user;
+    }
+
+    const nextAssessments = user.assessments.filter(
+      (assessment) => assessment.submissionId !== submissionId,
+    );
+
+    if (nextAssessments.length === user.assessments.length) {
+      return user;
+    }
+
+    hasChanges = true;
+
+    return {
+      ...user,
+      assessments: nextAssessments,
+    };
+  });
+
+  if (hasChanges) {
+    await writeUsers(updatedUsers);
+  }
+
+  return hasChanges;
+};
