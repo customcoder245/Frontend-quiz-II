@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+/* @import URL("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"); */
+
+:root {
+  --primary-color: #9c3246;
+  --secondary-color: #f9f7f7;
+  --black-color: #000000;
+  --off-black-color: #0a0908;
+  --dark-grey-color: #505051;
+  --grey-color: #bababb;
+  --light-grey-color: #eaeaeb;
+  --off-white-color: #fafafb;
+  --white-color: #ffffff;
+  --green-color: #30ab66;
+  --blue-color: #2b50aa;
+  --red-color: #d0011b;
+}
+
+/* @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+} */
+/* 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+.test {
+  font-family: var(--font-display), serif;
+}
+
+.quiz-title {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.95rem, 1.7rem + 1vw, 2.35rem);
+  line-height: 1.12;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.quiz-subtitle {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.result-title {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.95rem, 1.7rem + 0.9vw, 2.3rem);
+  line-height: 1.14;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.section-title {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.8rem, 1.55rem + 0.8vw, 2.1rem);
+  line-height: 1.15;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+body {
+  background: var(--white-color);
+  color: var(--off-black-color);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  cursor: pointer;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+img {
+  image-rendering: auto;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.page-slide-in {
+  animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes purefemmLoader {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.purefemm-loader {
+  width: 120px;
+  height: 120px;
+  border: 2px solid #dddddd;
+  border-bottom-color: #b13d53;
+  border-radius: 999px;
+  animation: purefemmLoader 1.2s linear infinite;
+}
+
+.purefemm-loader-done {
+  width: 120px;
+  height: 120px;
+  border: 2px solid #b13d53;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b13d53;
+}
+
+@media (min-width: 640px) {
+  .quiz-title {
+    font-size: clamp(2.15rem, 1.9rem + 0.85vw, 2.45rem);
+  }
+
+  .quiz-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .result-title {
+    font-size: clamp(2.1rem, 1.9rem + 0.75vw, 2.4rem);
+  }
+
+  .section-title {
+    font-size: clamp(1.95rem, 1.75rem + 0.7vw, 2.2rem);
+  }
+}

@@ -1,0 +1,406 @@
+[
+  {
+    "id": "1b6fd090-5c1a-4766-b471-ac13f6cfbd04",
+    "name": "Demo",
+    "email": "demo@gmail.com",
+    "passwordHash": "4157844b867071a4c30ee1c4076fa671:fd7d8da17ed0cfd0a7ba523bf61fdb498f03731db08e19f6c07503d208765b9c65dd752596cdd66bc7ae64298341fe8a81a5b312830cb65501bf70974317181d",
+    "createdAt": "2026-04-07T05:36:06.365Z",
+    "lastLoginAt": "2026-04-07T06:15:02.849Z",
+    "loginCount": 1
+  },
+  {
+    "id": "33cb9179-dfe8-488e-8472-fcf4373db690",
+    "name": "userlocal",
+    "email": "userlocal@gmail.com",
+    "passwordHash": "b00ff3af6344b5f8d44c05dc0d265158:f569695330a6aa06d4207e59f921da4ffc0cecaaae4aa1e502b312ab3695bea2e93cf3dae7988b42d9e9cafdb62eab95a3ba9722aa53978b3127f20791cf2a30",
+    "createdAt": "2026-04-07T06:03:37.276Z",
+    "lastLoginAt": "2026-04-07T06:12:18.279Z",
+    "loginCount": 1
+  },
+  {
+    "id": "605508c9-b237-4dc6-bdc5-dccacbb5f852",
+    "name": "Demouser",
+    "email": "demouser@gmail.com",
+    "passwordHash": "8a20258e1ad4dfdb0306cb62a2db9802:60ab53e550efcf62eedeea7ac23a7a43a5c00d1f3ceedb6975529252a1c782b613e2d329badf5653df3c757adaa58e952f70c12ee0bc8b3fbe6b0c18529f72b4",
+    "createdAt": "2026-04-07T06:32:21.698Z",
+    "lastLoginAt": "2026-04-07T06:37:22.379Z",
+    "loginCount": 2
+  },
+  {
+    "id": "69d4f28333c2d17f2574caa9",
+    "name": "vishal",
+    "email": "vishal@codemantrasolutions.com",
+    "passwordHash": "",
+    "createdAt": "2026-04-07T12:16:52.829Z",
+    "authSource": "backend",
+    "assessments": [
+      {
+        "submissionId": "83eff029-a2e6-4ab8-8314-1d78017c0b3c",
+        "gender": "female",
+        "responses": [
+          {
+            "questionId": "screen1-age",
+            "answer": "55-64"
+          },
+          {
+            "questionId": "screen2-flash",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen3-sleep",
+            "answer": "Ich schlafe sehr gut"
+          },
+          {
+            "questionId": "screen4-intim",
+            "answer": "Ich habe weniger Interesse als zuvor"
+          },
+          {
+            "questionId": "screen5-exhausted",
+            "answer": "Nein"
+          },
+          {
+            "questionId": "screen6-anxious",
+            "answer": "Moechte ich nicht beantworten"
+          },
+          {
+            "questionId": "screen7-symptoms",
+            "answer": [
+              "dryness",
+              "brainfog",
+              "cravings",
+              "jointpain",
+              "none",
+              "bloating"
+            ]
+          },
+          {
+            "questionId": "screen8-weight",
+            "answer": "Nicht sicher"
+          },
+          {
+            "questionId": "screen10-symptoms",
+            "answer": [
+              "calorie",
+              "remedies",
+              "hrt",
+              "exercise",
+              "diet",
+              "none"
+            ]
+          },
+          {
+            "questionId": "screen12-height",
+            "answer": 120
+          },
+          {
+            "questionId": "screen13-current-weight",
+            "answer": 120
+          },
+          {
+            "questionId": "screen13-target-weight",
+            "answer": 80
+          },
+          {
+            "questionId": "screen14-body-type",
+            "answer": "medium"
+          }
+        ],
+        "createdAt": "2026-04-07T12:16:52.821Z"
+      }
+    ]
+  },
+  {
+    "id": "aabfa8c8-07a2-44a9-a16b-a601bb4bc6fc",
+    "name": "Tester Kumar",
+    "email": "tstingh@gmail.com",
+    "passwordHash": "",
+    "createdAt": "2026-04-08T04:37:57.912Z",
+    "authSource": "backend",
+    "assessments": [
+      {
+        "submissionId": "c9265455-f27f-4b3c-b717-5d6cf8728374",
+        "gender": "female",
+        "responses": [
+          {
+            "questionId": "screen1-age",
+            "answer": "45-54"
+          },
+          {
+            "questionId": "screen2-flash",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen3-sleep",
+            "answer": "Ich schlafe sehr gut"
+          },
+          {
+            "questionId": "screen4-intim",
+            "answer": "Mein Interesse ist gleich geblieben"
+          },
+          {
+            "questionId": "screen5-exhausted",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen6-anxious",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen7-symptoms",
+            "answer": [
+              "dryness",
+              "cravings",
+              "none"
+            ]
+          },
+          {
+            "questionId": "screen8-weight",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen10-symptoms",
+            "answer": [
+              "calorie",
+              "remedies",
+              "hrt",
+              "exercise",
+              "diet",
+              "none",
+              "intermittent"
+            ]
+          },
+          {
+            "questionId": "screen12-height",
+            "answer": 150
+          },
+          {
+            "questionId": "screen13-current-weight",
+            "answer": 70
+          },
+          {
+            "questionId": "screen13-target-weight",
+            "answer": 80
+          },
+          {
+            "questionId": "screen14-body-type",
+            "answer": "medium"
+          }
+        ],
+        "createdAt": "2026-04-08T04:37:57.905Z"
+      },
+      {
+        "submissionId": "af042d78-efdd-4d23-8602-3e16cea9be8a",
+        "gender": "female",
+        "responses": [
+          {
+            "questionId": "screen1-age",
+            "answer": "45-54"
+          },
+          {
+            "questionId": "screen2-flash",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen3-sleep",
+            "answer": "Ich schlafe sehr gut"
+          },
+          {
+            "questionId": "screen4-intim",
+            "answer": "Mein Interesse ist gleich geblieben"
+          },
+          {
+            "questionId": "screen5-exhausted",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen6-anxious",
+            "answer": "Nein"
+          },
+          {
+            "questionId": "screen7-symptoms",
+            "answer": [
+              "dryness",
+              "cravings",
+              "none"
+            ]
+          },
+          {
+            "questionId": "screen8-weight",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen10-symptoms",
+            "answer": [
+              "calorie",
+              "remedies",
+              "hrt",
+              "exercise",
+              "diet",
+              "none",
+              "intermittent"
+            ]
+          },
+          {
+            "questionId": "screen12-height",
+            "answer": 150
+          },
+          {
+            "questionId": "screen13-current-weight",
+            "answer": 70
+          },
+          {
+            "questionId": "screen13-target-weight",
+            "answer": 80
+          },
+          {
+            "questionId": "screen14-body-type",
+            "answer": "medium"
+          }
+        ],
+        "createdAt": "2026-04-08T04:46:51.710Z"
+      },
+      {
+        "submissionId": "2fc6fb2f-5606-4540-b1a8-07f42fb8fe33",
+        "gender": "female",
+        "responses": [
+          {
+            "questionId": "screen1-age",
+            "answer": "45-54"
+          },
+          {
+            "questionId": "screen2-flash",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen3-sleep",
+            "answer": "Ich schlafe sehr gut"
+          },
+          {
+            "questionId": "screen4-intim",
+            "answer": "Mein Interesse ist gleich geblieben"
+          },
+          {
+            "questionId": "screen5-exhausted",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen6-anxious",
+            "answer": "Nein"
+          },
+          {
+            "questionId": "screen7-symptoms",
+            "answer": [
+              "dryness",
+              "cravings",
+              "none"
+            ]
+          },
+          {
+            "questionId": "screen8-weight",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen10-symptoms",
+            "answer": [
+              "calorie",
+              "remedies",
+              "hrt",
+              "exercise",
+              "diet",
+              "none",
+              "intermittent"
+            ]
+          },
+          {
+            "questionId": "screen12-height",
+            "answer": 150
+          },
+          {
+            "questionId": "screen13-current-weight",
+            "answer": 70
+          },
+          {
+            "questionId": "screen13-target-weight",
+            "answer": 80
+          },
+          {
+            "questionId": "screen14-body-type",
+            "answer": "medium"
+          }
+        ],
+        "createdAt": "2026-04-08T04:51:30.518Z"
+      },
+      {
+        "submissionId": "fc85e6db-4d02-421d-b07f-3e19c15be3fe",
+        "gender": "female",
+        "responses": [
+          {
+            "questionId": "screen1-age",
+            "answer": "45-54"
+          },
+          {
+            "questionId": "screen2-flash",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen3-sleep",
+            "answer": "Ich schlafe sehr gut"
+          },
+          {
+            "questionId": "screen4-intim",
+            "answer": "Mein Interesse ist gleich geblieben"
+          },
+          {
+            "questionId": "screen5-exhausted",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen6-anxious",
+            "answer": "Nein"
+          },
+          {
+            "questionId": "screen7-symptoms",
+            "answer": [
+              "dryness",
+              "cravings",
+              "none"
+            ]
+          },
+          {
+            "questionId": "screen8-weight",
+            "answer": "Ja"
+          },
+          {
+            "questionId": "screen10-symptoms",
+            "answer": [
+              "calorie",
+              "remedies",
+              "hrt",
+              "exercise",
+              "diet",
+              "none",
+              "intermittent"
+            ]
+          },
+          {
+            "questionId": "screen12-height",
+            "answer": 150
+          },
+          {
+            "questionId": "screen13-current-weight",
+            "answer": 70
+          },
+          {
+            "questionId": "screen13-target-weight",
+            "answer": 80
+          },
+          {
+            "questionId": "screen14-body-type",
+            "answer": "medium"
+          }
+        ],
+        "createdAt": "2026-04-08T04:56:31.047Z"
+      }
+    ]
+  }
+]
