@@ -30,7 +30,6 @@ type DashboardClientProps = {
 
 const iconProps = { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 const Icon = ({ children, ...props }: SVGProps<SVGSVGElement> & { children: ReactNode }) => <svg aria-hidden="true" {...iconProps} {...props}>{children}</svg>;
-const Bell = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" /><path d="M10 17a2 2 0 0 0 4 0" /></Icon>;
 const Search = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><circle cx="11" cy="11" r="6.5" /><path d="m20 20-3.5-3.5" /></Icon>;
 const Grid = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></Icon>;
 const File = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7Z" /><path d="M14 2v5h5" /><path d="M9 13h6" /><path d="M9 17h6" /><path d="M9 9h2" /></Icon>;
@@ -341,10 +340,6 @@ export default function DashboardClient({
                     Logout
                   </button>
                 </form>
-                <Link href={`${pagePath}#recent-activity`} className="relative flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#dfe6ef] bg-white text-[#1d3559]">
-                  <Bell width={18} height={18} />
-                  <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ef5b6c] px-1 text-[10px] font-semibold text-white">{derivedData.recent.length}</span>
-                </Link>
               </div>
             </div>
           </div>
