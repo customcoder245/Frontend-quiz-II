@@ -46,7 +46,7 @@ export default function UserAuthForm({ mode }: UserAuthFormProps) {
       const data = (await response.json()) as AuthResponse;
 
       if (!response.ok) {
-        setError(data.message || "Request complete nahi ho saka.");
+        setError(data.message || "Request could not be completed.");
         return;
       }
 
@@ -55,7 +55,7 @@ export default function UserAuthForm({ mode }: UserAuthFormProps) {
       }
 
       if (isSignup) {
-        setSuccess("Signup ho gaya. Ab login page khul raha hai.");
+        setSuccess("Signup successful. Now the login page is opening..");
         window.setTimeout(() => router.push("/user-login"), 700);
         return;
       }

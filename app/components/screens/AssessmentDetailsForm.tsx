@@ -78,22 +78,22 @@ const AssessmentDetailsForm = () => {
     const fullName = [trimmedFirstName, trimmedLastName].filter(Boolean).join(" ").trim();
 
     if (trimmedFirstName.length < 2) {
-      setErrorMessage("Apna first name fill karein.");
+      setErrorMessage("Enter your first name.");
       return;
     }
 
     if (trimmedLastName.length < 2) {
-      setErrorMessage("Apna last name fill karein.");
+      setErrorMessage("Enter your Last name.");
       return;
     }
 
     if (!emailPattern.test(trimmedEmail)) {
-      setErrorMessage("Valid email id fill karein.");
+      setErrorMessage("Enter a valid email ID.");
       return;
     }
 
     if (trimmedMessage.length < 3) {
-      setErrorMessage("Apna message fill karein.");
+      setErrorMessage("Enter your message.");
       return;
     }
 
@@ -105,7 +105,7 @@ const AssessmentDetailsForm = () => {
       const responses = buildQuizResponses(questions, window.localStorage);
 
       if (responses.length === 0) {
-        throw new Error("Assessment responses nahi mile.");
+        throw new Error("Assessment responses not received.");
       }
 
       const data = await submitQuizAssessment({
@@ -156,7 +156,7 @@ const AssessmentDetailsForm = () => {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Assessment save nahi ho saka.",
+          : "Assessment could not be saved.",
       );
     } finally {
       setIsSubmitting(false);
