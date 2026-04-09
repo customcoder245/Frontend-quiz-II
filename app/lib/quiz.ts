@@ -334,7 +334,7 @@ export const submitQuizAssessment = async (payload: {
     return await submitToApi(backendApiBaseUrl);
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error("Assessment API tak pohanch nahi ho saki.");
+      throw new Error("Unable to access the Assessment API.");
     }
 
     throw error;

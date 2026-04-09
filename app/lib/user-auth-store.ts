@@ -101,20 +101,20 @@ export const createUserAccount = async (input: {
   const password = input.password.trim();
 
   if (name.length < 2) {
-    throw new Error("Name required hai.");
+    throw new Error("Name is required.");
   }
 
   if (!/\S+@\S+\.\S+/.test(email)) {
-    throw new Error("Valid email required hai.");
+    throw new Error("A valid email is required.");
   }
 
   if (password.length < 6) {
-    throw new Error("Password kam se kam 6 characters ka hona chahiye.");
+    throw new Error("Password must be at least 6 characters long.");
   }
 
   const users = await readUsers();
   if (users.some((user) => user.email === email)) {
-    throw new Error("Is email se account pehle se bana hua hai.");
+    throw new Error("An account with this email already exists.");
   }
 
   const user: StoredUserAccount = {
@@ -149,7 +149,7 @@ export const verifyUserAccount = async (input: {
   const user = users[userIndex];
 
   if (!user || !verifyPassword(password, user.passwordHash)) {
-    throw new Error("Email ya password galat hai.");
+    throw new Error("Email or password is incorrect.");
   }
 
   const updatedUser: StoredUserAccount = {

@@ -180,7 +180,7 @@ export const deleteSubmissionFromBackend = async ({
     return {
       attempted: false,
       deleted: false,
-      message: "Backend API base URL configured nahi hai.",
+      message: "Backend API base URL is not configured.",
     };
   }
 
@@ -255,6 +255,6 @@ export const deleteSubmissionFromBackend = async ({
   return {
     attempted,
     deleted: false,
-    message: attempted ? lastMessage : "Compatible backend delete endpoint nahi mila.",
+    message: attempted ? lastMessage : "No compatible backend delete endpoint found.",
   };
 };

@@ -176,7 +176,7 @@ const postToBackend = async (
 
       const user = normalizeBackendUser(data, payload.email);
       if (!user) {
-        throw new Error("Backend se user data nahi mila.");
+        throw new Error("User data was not received from the backend.");
       }
 
       return {
