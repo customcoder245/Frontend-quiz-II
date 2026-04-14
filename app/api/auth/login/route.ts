@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
     if (!username.trim() || !password.trim()) {
       return NextResponse.json(
-        { message: "Admin email aur password required hain." },
+        { message: "Admin email and password are required. 🔐" },
         { status: 400 },
       );
     }
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     });
     if (!backendToken) {
       return NextResponse.json(
-        { message: "Backend se auth token nahi mila." },
+        { message: "Auth token was not received from the backend." },
         { status: 500 },
       );
     }
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     const message =
       axios.isAxiosError(error)
         ? error.response?.data?.message || error.message
-        : "Login process complete nahi ho saka.";
+        : "The login process could not be completed.";
     const status = axios.isAxiosError(error) ? error.response?.status || 500 : 500;
 
     return NextResponse.json(
