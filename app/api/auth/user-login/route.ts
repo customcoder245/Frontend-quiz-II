@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Login nahi ho saka." },
+      { message: error instanceof Error ? error.message : "Login could not be completed" },
       { status: 401 },
     );
   }

@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const existingUser = await findUserAccountByEmail(payload.email);
     if (existingUser) {
       return NextResponse.json(
-        { message: "Is email se account pehle se bana hua hai.", user: existingUser },
+        { message: "An account has already been created with this email", user: existingUser },
         { status: 409 },
       );
     }
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Signup nahi ho saka." },
+      { message: error instanceof Error ? error.message : "Signup could not be completed" },
       { status: 400 },
     );
   }

@@ -25,7 +25,7 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     if (!submissionId) {
       return NextResponse.json(
-        { message: "Submission id required hai." },
+        { message: "Submission ID is required" },
         { status: 400 },
       );
     }
@@ -37,7 +37,7 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     if (!exists) {
       return NextResponse.json(
-        { message: "Submission nahi mili." },
+        { message: "Submission not received" },
         { status: 404 },
       );
     }
@@ -53,7 +53,7 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
           {
             message:
               backendDelete.message ||
-              "Backend delete endpoint available nahi hai.",
+              "Backend delete endpoint is not available.",
           },
           { status: backendDelete.attempted ? 502 : 501 },
         );
@@ -71,7 +71,7 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     if (!deleted) {
       return NextResponse.json(
-        { message: "Submission delete nahi ho saki." },
+        { message: "The submission could not be deleted." },
         { status: 404 },
       );
     }
@@ -86,7 +86,7 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
         message:
           error instanceof Error
             ? error.message
-            : "Submission delete nahi ho saki.",
+            : "The submission could not be deleted.",
       },
       { status: 500 },
     );

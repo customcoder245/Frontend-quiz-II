@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
     if (!apiBaseUrl) {
       return NextResponse.json(
-        { message: "NEXT_PUBLIC_API_BASE_URL set nahi hai." },
+        { message: "NEXT_PUBLIC_API_BASE_URL It is not set." },
         { status: 500 },
       );
     }
