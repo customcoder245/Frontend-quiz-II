@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const Screen3 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen3-sleep",
+    "Wie würdest du deine Schlafqualität beschreiben?",
+  );
   const [sleepQuality, setSleepQuality] = useState<string | null>(null);
   const currentSleepQuality =
     sleepQuality ?? (hydrated ? localStorage.getItem("screen3-sleep") : null);
@@ -23,7 +28,7 @@ const Screen3 = () => {
     <div>
       <div className="mx-auto mt-9 max-w-[820px] px-3">
         <h2 className="quiz-title text-center text-(--primary-color)">
-          Wie würdest du deine Schlafqualität beschreiben?
+          {title}
         </h2>
 
         <div className="page-slide-in mx-auto my-5 grid max-w-md gap-4 px-1.5">

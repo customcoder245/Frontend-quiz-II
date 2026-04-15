@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const MIN_WEIGHT = 30;
 const MAX_WEIGHT = 300;
@@ -11,6 +12,7 @@ const MAX_WEIGHT = 300;
 const Screen13 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText("screen13-current-weight", "Wie viel wiegst du?");
   const [currentWeight, setCurrentWeight] = useState<string | null>(null);
   const [targetWeight, setTargetWeight] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
@@ -48,7 +50,7 @@ const Screen13 = () => {
   return (
     <div className="min-h-[calc(100vh-100px)] pb-32">
       <div className="mx-auto mt-10 max-w-[760px] px-4 text-center">
-        <h2 className="result-title text-(--primary-color)">Wie viel wiegst du?</h2>
+        <h2 className="result-title text-(--primary-color)">{title}</h2>
 
         <div className="page-slide-in mx-auto mt-12 max-w-[430px]">
           <div>

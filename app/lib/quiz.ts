@@ -39,7 +39,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen1-age",
     order: 1,
-    questionText: "Wie alt bist du?",
+    questionText: "Speichert dein Körper hormonelles Fett?",
     attributeIds: ["age", "age-group"],
     classIds: ["screen1-age"],
     parseAnswer: (rawValue) => rawValue || null,
@@ -61,7 +61,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen3-sleep",
     order: 3,
-    questionText: "Wie schlaefst du aktuell?",
+    questionText: "Wie würdest du deine Schlafqualität beschreiben?",
     attributeIds: ["sleep-quality"],
     classIds: ["screen3-sleep"],
     parseAnswer: (rawValue) => {
@@ -77,7 +77,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen4-intim",
     order: 4,
-    questionText: "Wie hat sich dein Intimleben veraendert?",
+    questionText: "Hast du Veränderungen in deinem Intimleben bemerkt?",
     attributeIds: ["intimleben", "libido"],
     classIds: ["screen4-intim"],
     parseAnswer: (rawValue) => {
@@ -92,7 +92,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen5-exhausted",
     order: 5,
-    questionText: "Fuehlst du dich haeufig erschoepft?",
+    questionText: "Fühlst du dich oft müde, schwach oder sogar erschöpft?",
     attributeIds: ["energy", "exhausted"],
     classIds: ["screen5-exhausted"],
     parseAnswer: (rawValue) => {
@@ -106,7 +106,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen6-anxious",
     order: 6,
-    questionText: "Fuehlst du dich gestresst oder aengstlich?",
+    questionText: "Fühlst du dich oft ängstlich oder überfordert?",
     attributeIds: ["stress", "anxious"],
     classIds: ["screen6-anxious"],
     parseAnswer: (rawValue) => {
@@ -121,7 +121,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen7-symptoms",
     order: 7,
-    questionText: "Welche weiteren Symptome treffen auf dich zu?",
+    questionText: "Gab es sonst noch etwas, womit du in letzter Zeit zu kämpfen hattest?",
     attributeIds: ["additional-symptoms"],
     classIds: ["screen7-symptoms"],
     parseAnswer: (rawValue) => parseJsonArray(rawValue),
@@ -129,7 +129,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen8-weight",
     order: 8,
-    questionText: "Hast du eine Gewichtszunahme bemerkt?",
+    questionText: "Hast du im letzten Jahr an Gewicht zugenommen?",
     attributeIds: ["weight-gain"],
     classIds: ["screen8-weight"],
     parseAnswer: (rawValue) => {
@@ -144,7 +144,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen10-symptoms",
     order: 9,
-    questionText: "Was hast du bisher schon ausprobiert?",
+    questionText: "Hast du schonmal eine dieser Methoden versucht?",
     attributeIds: ["previous-methods"],
     classIds: ["screen10-symptoms"],
     parseAnswer: (rawValue) => parseJsonArray(rawValue),
@@ -152,7 +152,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen12-height",
     order: 10,
-    questionText: "Wie gross bist du?",
+    questionText: "Wie groß bist du?",
     attributeIds: ["height"],
     classIds: ["screen12-height"],
     parseAnswer: (rawValue) => {
@@ -163,7 +163,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen13-current-weight",
     order: 11,
-    questionText: "Wie viel wiegst du aktuell?",
+    questionText: "Wie viel wiegst du?",
     attributeIds: ["current-weight"],
     classIds: ["screen13-current-weight"],
     parseAnswer: (rawValue) => {
@@ -185,7 +185,7 @@ const definitionList: QuizDefinition[] = [
   {
     storageKey: "screen14-body-type",
     order: 13,
-    questionText: "Welcher Koerpertyp beschreibt dich am besten?",
+    questionText: "Welche Körperform trifft aktuell am besten auf dich zu?",
     attributeIds: ["body-type"],
     classIds: ["screen14-body-type"],
     parseAnswer: (rawValue) => rawValue || null,

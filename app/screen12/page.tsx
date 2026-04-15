@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const MIN_HEIGHT = 90;
 const MAX_HEIGHT = 240;
@@ -11,6 +12,7 @@ const MAX_HEIGHT = 240;
 const Screen12 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText("screen12-height", "Wie groß bist du?");
   const [height, setHeight] = useState<string | null>(null);
   const currentHeight =
     height ?? (hydrated ? (localStorage.getItem("screen12-height") ?? "") : "");
@@ -33,7 +35,7 @@ const Screen12 = () => {
     <div className="min-h-[calc(100vh-100px)] bg-white pb-28">
       <div className="mx-auto mt-9 max-w-[760px] px-4 text-center">
         <h2 className="font-(family-name:--font-display) text-[31px] font-normal leading-[1.15] text-(--primary-color) sm:text-[33px]">
-          Wie groß bist du?
+          {title}
         </h2>
 
         <p className="mx-auto mt-7 max-w-[392px] text-[17px] leading-[1.38] text-black sm:text-[18px]">

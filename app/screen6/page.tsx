@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const Screen6 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen6-anxious",
+    "Fühlst du dich oft ängstlich oder überfordert?",
+  );
   const [anxious, setAnxious] = useState<string | null>(null);
   const currentAnxious =
     anxious ?? (hydrated ? localStorage.getItem("screen6-anxious") : null);
@@ -23,7 +28,7 @@ const Screen6 = () => {
     <div>
       <div className="mx-auto mt-9 max-w-[820px] px-3">
         <h2 className="quiz-title text-center text-(--primary-color)">
-          Fühlst du dich oft ängstlich oder überfordert?
+          {title}
         </h2>
 
         <div className="page-slide-in mx-auto my-5 grid max-w-md gap-4 px-1.5">

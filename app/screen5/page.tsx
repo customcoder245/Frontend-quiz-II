@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const Screen5 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen5-exhausted",
+    "Fühlst du dich oft müde, schwach oder sogar erschöpft?",
+  );
   const [exhausted, setExhausted] = useState<string | null>(null);
   const currentExhausted =
     exhausted ?? (hydrated ? localStorage.getItem("screen5-exhausted") : null);
@@ -23,7 +28,7 @@ const Screen5 = () => {
     <div>
       <div className="mx-auto mt-9 max-w-[820px] px-3">
         <h2 className="quiz-title text-center text-(--primary-color)">
-          Fühlst du dich oft müde, schwach oder sogar erschöpft?
+          {title}
         </h2>
 
         <div className="page-slide-in mx-auto my-5 grid max-w-md gap-4 px-1.5">

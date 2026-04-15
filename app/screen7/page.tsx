@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const symptoms = [
   { id: "bloating", label: "Blähungen", emoji: "💨" },
@@ -22,6 +23,10 @@ const symptoms = [
 const Screen7 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen7-symptoms",
+    "Gab es sonst noch etwas, womit du in letzter Zeit zu kämpfen hattest?",
+  );
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[] | null>(null);
 
   const currentSelectedSymptoms = (() => {
@@ -54,7 +59,7 @@ const Screen7 = () => {
     <div className="min-h-[calc(100vh-100px)] pb-32">
       <div className="mx-auto mt-9 max-w-[820px] px-3">
         <h2 className="quiz-title text-center text-(--primary-color)">
-          Gab es sonst noch etwas, womit du in letzter Zeit zu kämpfen hattest?
+          {title}
         </h2>
 
         <h4 className="quiz-subtitle mx-auto mt-6 max-w-md text-center text-(--dark-grey-color)">

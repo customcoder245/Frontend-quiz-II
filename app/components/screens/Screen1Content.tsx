@@ -12,6 +12,7 @@ import FemaleAgeGrp1 from "@/public/female-age-grp/img1.svg";
 import FemaleAgeGrp2 from "@/public/female-age-grp/img2.svg";
 import FemaleAgeGrp3 from "@/public/female-age-grp/img3.svg";
 import FemaleAgeGrp4 from "@/public/female-age-grp/img4.svg";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const ageGroups = [
   { id: "35-44", label: "35-44", image: FemaleAgeGrp1 },
@@ -25,6 +26,10 @@ const logos = [Brand1, Brand2, Brand3, Brand4];
 export default function Screen1Content() {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen1-age",
+    "Speichert dein Körper hormonelles Fett?",
+  );
   const [selectedAge, setSelectedAge] = useState<string | null>(null);
   const currentSelectedAge =
     selectedAge ?? (hydrated ? localStorage.getItem("screen1-age") : null);
@@ -42,7 +47,7 @@ export default function Screen1Content() {
     <div className="min-h-[calc(100vh-112px)] bg-white">
       <div className="mx-auto max-w-[900px] px-4 pb-8 pt-7 sm:pt-9">
         <h2 className="mx-auto max-w-[760px] font-(family-name:--font-display) text-center text-[34px] font-normal leading-[1.08] tracking-[-0.02em] text-(--primary-color) sm:text-[42px]">
-          Speichert dein K&ouml;rper hormonelles Fett?
+          {title}
         </h2>
 
         <div className="page-slide-in my-7 grid grid-cols-2 gap-4 sm:my-8 sm:grid-cols-4 sm:gap-5">

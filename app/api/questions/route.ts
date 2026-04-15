@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { getBackendRequestHeaders } from "@/app/lib/backend-request-auth";
-import { getLocalQuestions } from "@/app/lib/quiz";
+import { loadQuestions, loadStoredQuestions } from "@/app/lib/question-store";
 
 export async function GET(request: Request) {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
   const { searchParams } = new URL(request.url);
   const gender = searchParams.get("gender") ?? "female";
+
+  const stored = await loadStoredQuestions();
+  if (stored.exists) {
+    return NextResponse.json({ questions: stored.questions });
+  }
 
   if (apiBaseUrl) {
     try {
@@ -33,5 +38,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ questions: getLocalQuestions() });
+  return NextResponse.json({ questions: await loadQuestions() });
 }

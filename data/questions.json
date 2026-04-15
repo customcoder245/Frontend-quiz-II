@@ -1,0 +1,93 @@
+[
+  {
+    "_id": "screen1-age",
+    "order": 1,
+    "questionText": "Speichert dein Körper hormonelles Fett?",
+    "attributeId": "age",
+    "classid": "screen1-age"
+  },
+  {
+    "_id": "screen2-flash",
+    "order": 2,
+    "questionText": "Leidest du unter Hitzewallungen?",
+    "attributeId": "hot-flashes",
+    "classid": "screen2-flash"
+  },
+  {
+    "_id": "screen3-sleep",
+    "order": 3,
+    "questionText": "Wie würdest du deine Schlafqualität beschreiben?",
+    "attributeId": "sleep-quality",
+    "classid": "screen3-sleep"
+  },
+  {
+    "_id": "screen4-intim",
+    "order": 4,
+    "questionText": "Wie hat sich dein Intimleben veraendert?",
+    "attributeId": "intimleben",
+    "classid": "screen4-intim"
+  },
+  {
+    "_id": "screen5-exhausted",
+    "order": 5,
+    "questionText": "Fuehlst du dich haeufig erschoepft?",
+    "attributeId": "energy",
+    "classid": "screen5-exhausted"
+  },
+  {
+    "_id": "screen6-anxious",
+    "order": 6,
+    "questionText": "Fuehlst du dich gestresst oder aengstlich?",
+    "attributeId": "stress",
+    "classid": "screen6-anxious"
+  },
+  {
+    "_id": "screen7-symptoms",
+    "order": 7,
+    "questionText": "Welche weiteren Symptome treffen auf dich zu?",
+    "attributeId": "additional-symptoms",
+    "classid": "screen7-symptoms"
+  },
+  {
+    "_id": "screen8-weight",
+    "order": 8,
+    "questionText": "Hast du eine Gewichtszunahme bemerkt?",
+    "attributeId": "weight-gain",
+    "classid": "screen8-weight"
+  },
+  {
+    "_id": "screen10-symptoms",
+    "order": 9,
+    "questionText": "Was hast du bisher schon ausprobiert?",
+    "attributeId": "previous-methods",
+    "classid": "screen10-symptoms"
+  },
+  {
+    "_id": "screen12-height",
+    "order": 10,
+    "questionText": "Wie gross bist du?",
+    "attributeId": "height",
+    "classid": "screen12-height"
+  },
+  {
+    "_id": "screen13-current-weight",
+    "order": 11,
+    "questionText": "Wie viel wiegst du aktuell?",
+    "attributeId": "current-weight",
+    "classid": "screen13-current-weight"
+  },
+  {
+    "_id": "screen13-target-weight",
+    "order": 12,
+    "questionText": "Was ist dein Zielgewicht?",
+    "attributeId": "goal-weight",
+    "classid": "screen13-target-weight"
+  },
+  {
+    "_id": "screen14-body-type",
+    "order": 13,
+    "questionText": "Welcher Koerpertyp beschreibt dich am besten?",
+    "attributeId": "body-type",
+    "classid": "screen14-body-type"
+  }
+]

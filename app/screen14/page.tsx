@@ -4,9 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
-const SCREEN_TITLE =
-  "Welche K\u00f6rperform trifft aktuell am besten auf dich zu?";
 const SCREEN_SUBTITLE = "(W\u00e4hle eine Antwort aus)";
 
 const bodyTypes = [
@@ -39,6 +38,10 @@ const bodyTypes = [
 const Screen14 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen14-body-type",
+    "Welche Körperform trifft aktuell am besten auf dich zu?",
+  );
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const currentSelectedType =
     selectedType ?? (hydrated ? localStorage.getItem("screen14-body-type") : null);
@@ -56,7 +59,7 @@ const Screen14 = () => {
     <section className="bg-white px-4 pb-10 pt-10">
       <div className="mx-auto max-w-[920px]">
         <h2 className="quiz-title mx-auto max-w-[610px] text-center text-(--primary-color)">
-          {SCREEN_TITLE}
+          {title}
         </h2>
 
         <p className="quiz-subtitle mx-auto mt-3 max-w-[280px] text-center text-(--dark-grey-color)">

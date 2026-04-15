@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const Screen8 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText(
+    "screen8-weight",
+    "Hast du im letzten Jahr an Gewicht zugenommen?",
+  );
   const [weightGain, setWeightGain] = useState<string | null>(null);
   const currentWeightGain =
     weightGain ?? (hydrated ? localStorage.getItem("screen8-weight") : null);
@@ -23,7 +28,7 @@ const Screen8 = () => {
     <div>
       <div className="mx-auto mt-9 max-w-[820px] px-3">
         <h2 className="quiz-title text-center text-(--primary-color)">
-          Hast du im letzten Jahr an Gewicht zugenommen?
+          {title}
         </h2>
 
         <div className="page-slide-in mx-auto my-5 grid max-w-md gap-4 px-1.5">

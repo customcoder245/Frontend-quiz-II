@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useHydrated from "@/app/components/useHydrated";
+import { useQuestionText } from "@/app/components/quiz/useQuestionText";
 
 const Screen2 = () => {
   const router = useRouter();
   const hydrated = useHydrated();
+  const title = useQuestionText("screen2-flash", "Leidest du unter Hitzewallungen?");
   const [sufferFlash, setSufferFlash] = useState<string | null>(null);
   const currentSufferFlash =
     sufferFlash ?? (hydrated ? localStorage.getItem("screen2-flash") : null);
@@ -23,7 +25,7 @@ const Screen2 = () => {
     <div>
       <div className="mx-auto mt-9 max-w-[520px] px-3">
         <h2 className="quiz-title text-center text-(--primary-color)">
-          Leidest du unter Hitzewallungen?
+          {title}
         </h2>
 
         <div className="page-slide-in my-5 grid gap-4 px-1.5">

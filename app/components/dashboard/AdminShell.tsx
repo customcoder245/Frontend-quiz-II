@@ -3,7 +3,7 @@ import { ReactNode, SVGProps } from "react";
 import { logoutAdminAction } from "@/app/lib/auth-actions";
 import type { AdminSession } from "@/app/lib/auth";
 
-type ActivePage = "users" | "reports";
+type ActivePage = "users" | "questions" | "reports";
 
 type AdminShellProps = {
   adminSession: Pick<AdminSession, "username" | "role" | "loginAt">;
@@ -71,6 +71,17 @@ const Chart = (p: SVGProps<SVGSVGElement>) => (
   </Icon>
 );
 
+const List = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}>
+    <path d="M8 6h13" />
+    <path d="M8 12h13" />
+    <path d="M8 18h13" />
+    <path d="M3.5 6h.5" />
+    <path d="M3.5 12h.5" />
+    <path d="M3.5 18h.5" />
+  </Icon>
+);
+
 export const formatAdminDateTime = (value: string) =>
   new Intl.DateTimeFormat("en-IN", {
     dateStyle: "medium",
@@ -92,6 +103,12 @@ export default function AdminShell({
     { label: "Dashboard", icon: Grid, href: "/dashboard", active: false },
     { label: "Submissions", icon: File, href: "/submissions", active: false },
     { label: "Users", icon: Users, href: "/admin", active: activePage === "users" },
+    {
+      label: "Questions",
+      icon: List,
+      href: "/admin/questions",
+      active: activePage === "questions",
+    },
     { label: "Reports", icon: Chart, href: "/reports", active: activePage === "reports" },
   ];
 
